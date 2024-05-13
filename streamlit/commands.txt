@@ -1,0 +1,7 @@
+aws ecr get-login-password --region us-west-1 --profile isengard-main-mgmt | docker login --username AWS --password-stdin 654654454237.dkr.ecr.us-west-1.amazonaws.com
+
+docker build -t op3nsourceai-ui .
+
+docker tag op3nsourceai-ui:latest 654654454237.dkr.ecr.us-west-1.amazonaws.com/op3nsourceai:op3nsourceai-ui
+
+docker push 654654454237.dkr.ecr.us-west-1.amazonaws.com/op3nsourceai:op3nsourceai-ui
