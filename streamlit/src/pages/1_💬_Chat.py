@@ -1,8 +1,8 @@
 import streamlit as st
-import time
 from components.layout.components import show_empty_container
 from components.layout.styling import set_page_styling
 from components.utils.helpers import reset_session_state, prepare_text_for_display, clear_results
+from components.utils.agent.chat_agent_service import ChatAgentService
 
 #########################
 #     COVER & CONFIG
@@ -34,8 +34,10 @@ HELLO_MESSAGE = "Hi! I am an AI assistant. How can I help you?"
 # page name for caching
 PAGE_NAME = "chat"
 
-MODELS = [ "Model 1", "Model 2", "Model 3" ]
+MODELS = ["LLAMA_3", "CLAUDE_3"]
 TEMPERATURE_DEFAULT=0.5
+
+CHAT_AGENT = ChatAgentService()
 
 
 #########################
@@ -119,11 +121,9 @@ def run_chat_query() -> None:
                 with response_col:
                     with st.chat_message(name="assistant", avatar=ASSISTANT_AVATAR):
                         with st.spinner("Thinking..."):
-                            time.sleep(1)
-                            # Generate dummy response
-                            dummy_response = f"You asked: {st.session_state['query']}\nSelected Model: {st.session_state['ai_model']}\nSelected Temperature: {st.session_state['temperature']}"
-                            st.session_state["messages_chatbot"].append({"message": dummy_response})
-                            st.markdown(dummy_response)
+                            answer = CHAT_AGENT.invoke_agent(st.session_state['query'],st.session_state['ai_model'])
+                            st.session_state["messages_chatbot"].append({"message": answer})
+                            st.markdown(answer)
 
             thinking_placeholder.empty()
             vertical_space.empty()
@@ -145,14 +145,6 @@ with st.sidebar:
         options=MODELS,
         key="ai_model",
     )
-    temperature = st.slider(
-        label="Temperature:",
-        value=TEMPERATURE_DEFAULT,
-        min_value=0.0,
-        max_value=1.0,
-        key="temperature",
-    )
-
 
 #########################
 #      MAIN APP PAGE
